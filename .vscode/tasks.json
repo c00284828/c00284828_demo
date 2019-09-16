@@ -9,6 +9,8 @@
             "command": "/usr/bin/gcc",
             "args": [
                 "-g",
+                "-std=c99",
+                "-fsanitize=address",
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
@@ -16,6 +18,14 @@
             "options": {
                 "cwd": "/usr/bin"
             },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "type": "shell",
+            "label": "make active file",
+            "command": "make",
             "problemMatcher": [
                 "$gcc"
             ]
