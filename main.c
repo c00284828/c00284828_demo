@@ -2,61 +2,99 @@
 #include <string.h>
 #include <stdlib.h>
 
-int lengthOfLongestSubstring(char * s){
-	if(!s || *s == 0)
-		return 0;
 
-	char * p = s;
-	int max = 1;
-	while(*p){
-		char *n = p + 1;
-		int n_rep = 0;
-		char *x = p;
-		int sub_len;
-		while (*n) {
-			x = p;
-			//对n遍历从p到s结尾的子串，如果存在*n，则终止
-			//那么以*p为起点，可以获得
-			while(x != n ){
-				if(*x == *n) {
-					n_rep = 1;
-					goto fail;
-				}
-				x++;
-			}
-			n++;
+char * ret_substr(char *p, char *q)
+{
+	int ret_len = q - p + 1;
+	char *ret = malloc(ret_len+1);
+	memcpy(ret, p, ret_len);
+	ret[ret_len] = 0;
+	return ret;
+}
+
+int get_palind(char *s, char *e, char *p, char *q, char **ret_p, char ** ret_q)
+{
+	while (p >= s && q<= e){
+		if(*p == *q){
+			p--;
+			q++;
+		}else{
+			break;
 		}
-		n--;
-fail:
-		sub_len = 1 + (n - p - n_rep);
-		max = sub_len > max ? sub_len : max;
-		p = x + 1;
 	}
-	return max;
+
+	*ret_p = p+1;
+	*ret_q = q-1;
+	return *ret_q - *ret_p +1;
 }
 
-void tc1(){
-	char *m = NULL;
-	printf("get %d \n", lengthOfLongestSubstring(m));
+
+char * longestPalindrome(char * s){
+	char *p = s;
+
+	int len = strlen(s);
+	if(len < 2)
+		return ret_substr(s, s);
+
+	char *rp;
+	char *rq;
+	int rlen = 0;
+	char *p_max = s + len;
+	while (p < p_max)
+	{
+		char *ret_p, *ret_q;
+		int t_len;
+
+		t_len = get_palind(s, s+len, p, p, &ret_p, &ret_q);
+		if(rlen < t_len){
+			rlen = t_len;
+			rp = ret_p;
+			rq = ret_q;
+			p_max = s + len - (rlen >>1);
+		}
+
+		if(*p == *(p +1)){
+			t_len = get_palind(s, s+len, p, p + 1, &ret_p, &ret_q);
+			if(rlen < t_len){
+				rlen = t_len;
+				rp = ret_p;
+				rq = ret_q;
+				p_max = s + len - (rlen>>1);
+			}
+		}
+
+		p++;
+	}
+
+	return ret_substr(rp, rq);
 }
+
 void tc2(){
-	char *m = "a";
-	printf("%s:  %d \n", m, lengthOfLongestSubstring(m));
+	char *m = "aa";
+	char *ret = longestPalindrome(m);
+	printf("%s: %s \n", m, ret);
+	free(ret);
 }
 
 void tc3(){
-	char *m = "abcabcbb";
-	printf("%s:  %d \n", m, lengthOfLongestSubstring(m));
+	char *m = "babad";
+	char *ret = longestPalindrome(m);
+	printf("%s: %s \n", m, ret);
+	free(ret);
 }
 
 void tc4(){
-	char *m = "bbbbb";
-	printf("%s:  %d \n", m, lengthOfLongestSubstring(m));
+	char *m = "";
+	char *ret = longestPalindrome(m);
+	printf("%s: %s \n", m, ret);
+	free(ret);
 }
 
 void tc5(){
 	char *m = "pwwkew";
-	printf("%s:  %d \n", m, lengthOfLongestSubstring(m));
+	char *ret = longestPalindrome(m);
+	printf("%s: %s \n", m, ret);
+	free(ret);
 }
 
 int main(){
